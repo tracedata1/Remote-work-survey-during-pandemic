@@ -51,7 +51,9 @@ levels(data1$V27)<-c('Strongly disagree','Somewhat disagree','Neither agree nor 
 levels(data1$V30)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
 levels(data1$V31)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
 levels(data1$V32)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
-levels(data1$V33)<-c('50% less productive  (or less)','40% less productive','30% less productive','20% less productive','10% less productive','Productivity is about same','10% more productive','20% more productive','30% more productive','40% more productive','50% more productive  (or more)')
+levels(data1$V33)<-c('50% less productive  (or less)','40% less productive','30% less productive','20% less productive',
+'10% less productive','Productivity is about same','10% more productive','20% more productive','30% more productive',
+'40% more productive','50% more productive  (or more)')
 str(data1) 
 
 ```
@@ -174,8 +176,10 @@ ggarrange(p1+ rremove("ylab"), p2+ rremove("ylab"), ncol = 2, nrow = 1)
 ```{r}
 data12 <- data1 %>%
   mutate(NewV33=fct_collapse(V33,
-        'More Productive' = c("10% more productive","20% more productive","30% more productive","40% more productive","50% more productive  (or more)"),
-       'Less Productive' = c("10% less productive","20% less productive","30% less productive","40% less productive","50% less productive  (or less)")),
+        'More Productive' = c("10% more productive","20% more productive","30% more productive",
+        "40% more productive","50% more productive  (or more)"),
+       'Less Productive' = c("10% less productive","20% less productive",
+       "30% less productive","40% less productive","50% less productive  (or less)")),
        'Productivity is about same' = c("Productivity is about same"))
 
 
