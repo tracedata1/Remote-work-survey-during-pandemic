@@ -160,7 +160,9 @@ ggarrange(p1+ rremove("ylab"), p2+ rremove("ylab"), ncol = 2, nrow = 1)
    ) %>%
    mutate( percent= round(count/sum(count),2))
  
- ggplot(data = t1,aes(x = V4, y=percent*100,fill = V23)) +geom_point(aes(color=V23,size=percent*100))+theme(axis.text.x = element_text(angle = 90, hjust=0.9))+coord_flip()+ylab("percent")+theme(legend.position='bottom', legend.box = "vertical")
+ ggplot(data = t1,aes(x = V4, y=percent*100,fill = V23)) +geom_point(aes(color=V23,size=percent*100))
+ +theme(axis.text.x = element_text(angle = 90, hjust=0.9))+coord_flip()+ylab("percent")
+ +theme(legend.position='bottom', legend.box = "vertical")
  
 ```
 
