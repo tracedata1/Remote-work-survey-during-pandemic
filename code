@@ -1,0 +1,261 @@
+
+
+# Read Data 
+
+```{r}
+library(tidyverse)
+library(ggpubr)
+```
+
+# Read data
+```{r}
+
+surve2<- read.csv("2020_rws.csv",header=F)[-1,]
+
+```
+
+# Data Wrangling 
+
+```{r}
+data1<- surve2 %>%
+  dplyr::select(V2:V44)%>%
+  mutate(age = 2020-as.numeric(V2)) %>%
+  dplyr::select(-V2,-V5,-V7)
+
+head(data1)
+
+data1[,c(30:37)] <- lapply(data1[,c(30:37)], as.numeric)
+
+data1[sapply(data1, is.character)] <- lapply(data1[sapply(data1, is.character)], as.factor)
+
+
+```
+
+
+```{r}
+# define the order of attitude factors' levels
+
+
+levels(data1$V14)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
+levels(data1$V15)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
+levels(data1$V16)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
+levels(data1$V17)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
+levels(data1$V18)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
+levels(data1$V19)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
+levels(data1$V22)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
+levels(data1$V23)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
+levels(data1$V24)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
+levels(data1$V25)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
+levels(data1$V26)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
+levels(data1$V27)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
+levels(data1$V30)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
+levels(data1$V31)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
+levels(data1$V32)<-c('Strongly disagree','Somewhat disagree','Neither agree nor disagree','Somewhat agree','Strongly agree')
+levels(data1$V33)<-c('50% less productive  (or less)','40% less productive','30% less productive','20% less productive','10% less productive','Productivity is about same','10% more productive','20% more productive','30% more productive','40% more productive','50% more productive  (or more)')
+str(data1) 
+
+```
+
+## ggplot function
+```{r}
+
+plotbar <- function(x){
+theme_update(plot.title = element_text(hjust = 0.5))
+ ggplot(data1, aes(x, fill=x,group=1)) + 
+    geom_bar(fill="sky blue") +
+   geom_text(
+     aes(label=paste0(after_stat(count), ' ','( ', scales::percent(..prop..),')')),
+     stat='count',
+     size=2.5)+
+   theme(axis.text.x = element_text(angle = 45, hjust=1))
+  
+
+}
+
+```
+
+## Code used for generate figure 1
+
+```{r}
+## the background of the respondents from the survey 
+
+
+
+plotbar1 <- function(x){
+theme_update(plot.title = element_text(hjust = 0.5))
+ ggplot(data1, aes(fct_rev(fct_infreq(x)), fill=x,group=1),) + 
+    geom_bar(fill="sky blue") +
+   geom_text(
+     aes(label=paste0( scales::percent(..prop..))),
+     stat='count',
+     size=2)+
+   theme(axis.text.x = element_text(angle = 45, hjust=1))
+  
+
+}
+
+
+p11<- plotbar1(data1$V6) + ggtitle("Occupation")+coord_flip()
+
+  
+p12<-plotbar1(data1$V8)+ggtitle("Oganization Size ")+coord_flip()
+
+
+p13<-plotbar1(data1$V4) + ggtitle("Industry")+coord_flip()
+
+p112<-ggarrange(p11+rremove("xlab")+rremove("ylab"), p12+rremove("xlab")+rremove("ylab") ,ncol = 2, nrow = 1)
+ggarrange(p112,p13+rremove("ylab"),ncol=1,nrow=2,heights = c(1.5, 3))
+
+```
+
+## Code used for generate figure 2
+
+```{r}
+# It was easy to get permission to work remotely
+
+per1<-plotbar(data1$V17)+ggtitle("Last year")+xlab("V17")
+per2<-plotbar(data1$V25)+ggtitle("Last 3 months")+xlab("V18")
+
+ggarrange(per1+ rremove("ylab"), per2+ rremove("ylab"), ncol = 2, nrow = 1)
+
+```
+
+
+## Code used for generate figure 3
+
+```{r}
+
+# My organisation encouraged people to work remotely
+
+pe1<-plotbar(data1$V14)+ggtitle("Last year")+xlab("V14")
+pe2<-plotbar(data1$V22)+ggtitle(" Last 3 months")+xlab("V22")
+
+library(ggpubr)
+ggarrange(pe1+ rremove("ylab"), pe2+ rremove("ylab"), ncol = 2, nrow = 1)
+```
+## Code used for generate figure 4
+
+```{r}
+ # My organisation was well prepared for me to work remotely
+p1 <- plotbar(data1$V15)+ggtitle("Last year ")+xlab("V15")
+
+p2<-plotbar(data1$V23)+ggtitle("Last 3 months")+xlab("V23")
+
+
+library(ggpubr)
+ggarrange(p1+ rremove("ylab"), p2+ rremove("ylab"), ncol = 2, nrow = 1)
+```
+
+## Code used for generate figure 5
+```{r,message=FALSE}
+ 
+
+ t1<-data1 %>%
+   mutate(V23=fct_collapse(V23,
+      Disagree=c("Strongly disagree","Somewhat disagree"),
+      Agree=c("Strongly agree","Somewhat agree"))) %>%
+   group_by(V4,V23) %>%
+   summarise(
+     count=n()
+   ) %>%
+   mutate( percent= round(count/sum(count),2))
+ 
+ ggplot(data = t1,aes(x = V4, y=percent*100,fill = V23)) +geom_point(aes(color=V23,size=percent*100))+theme(axis.text.x = element_text(angle = 90, hjust=0.9))+coord_flip()+ylab("percent")+theme(legend.position='bottom', legend.box = "vertical")
+ 
+```
+
+
+
+
+## Code used for generate figure 6
+
+```{r}
+data12 <- data1 %>%
+  mutate(NewV33=fct_collapse(V33,
+        'More Productive' = c("10% more productive","20% more productive","30% more productive","40% more productive","50% more productive  (or more)"),
+       'Less Productive' = c("10% less productive","20% less productive","30% less productive","40% less productive","50% less productive  (or less)")),
+       'Productivity is about same' = c("Productivity is about same"))
+
+
+
+data12<-data12 %>%
+  mutate(NewV10 = fct_collapse(V10,
+    "Other" = c("Group household", "Multiple family household","Other one family household")))
+
+```
+
+
+```{r}
+
+## compare your productivity when you work remotely to when you work at your employer’s workplace
+pr1<-plotbar(data1$V33)+coord_flip()+xlab("V33")
+
+
+tb12<-data12 %>%
+  group_by(NewV33) %>%
+  summarise(
+    Count=n(),
+    Percent=paste(round(Count/length(data12$NewV33)*100,1),'%')
+)
+
+pr2 <- ggtexttable(tb12, rows = NULL, theme = ttheme("lBlue"))
+#ggarrange(pr1,pr2, ncol = 2, nrow = 1)
+
+ pr1+annotation_custom(ggplotGrob(pr2),ymin = 100,ymax = 500,xmax="40% less productive")
+```
+## Code used for generate figure 7
+```{r}
+
+ggplot(data = data12) +
+  geom_bar(aes(x = NewV10, fill=NewV33), position = "fill")+ylab("proportion")+coord_flip()+theme(legend.position='bottom')
+
+
+chisq1 <- chisq.test(data12$NewV10, data12$NewV33)
+chisq1
+  
+```
+
+## Code used for generate figure 8
+```{r}
+
+# 34 Vs 38 Preparing for work and commuting
+# 35 VS 39 Working
+# 36 VS 40 Personal and family time
+
+## obvious wrong value we delete this case when use the corresponding data.
+data2<-data1[!(data1$V39>=23|data1$V35>=23),]
+
+df_workcommute <- data2$V38-data2$V34
+summary(df_workcommute)
+hist(df_workcommute, xlab="work and commuting differece between last year and last 3 months", main='')
+t.test(df_workcommute)
+shapiro.test(df_workcommute)
+
+```
+
+
+## Code used for generate figure 9
+```{r}
+
+
+df_work <- data2$V39-data2$V35
+summary(data2$V35)
+
+summary(df_work)
+hist(df_work, xlab="working differece between last year and last 3 months", main='')
+t.test(df_work)
+
+```
+
+
+
+## Code used for generate figure 10
+
+```{r}
+
+df_personal <- data2$V40-data2$V36
+summary(df_personal)
+hist(df_personal, xlab="Personal and family time differece between last year and last 3 months", main='')
+t.test(df_personal)
+
+```
